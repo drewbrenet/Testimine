@@ -31,15 +31,17 @@ class ReceiptTest extends TestCase {
     public function testTax() {
         // Add values to input
         $inputAmount = 10.00;
+        // Tax %
         $taxInput = 0.10;
         // Add value for output
         $output = $this->Receipt->tax($inputAmount, $taxInput);
         // Test method
         $this->assertEquals(
             1.00,
+            // Out but variable
             $output,
             //Error message
-            'Tax should equal 1.00'
+            'The tax calculation should equal 1.00'
         );
     }
 }
