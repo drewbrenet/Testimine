@@ -7,27 +7,41 @@ use TDD\Receipt;
 
 // Class that extends TestCase
 class ReceiptTest extends TestCase {
+    // Method that initialize object
     public function setUp() {
+        // Create variable
        $this->Receipt = new Receipt();
     }
 
-    public function setDown() {
+    public function tearDown() {
+        //Removes variable
         unset($this->Receipt);
     }
-    public function testTotal() {
-        // Input values
-        $input = ([0,2,5,8]);
+
+    /**
+     * @dataProvider provideTotal
+     */
+    public function testTotal($items, $expected) {
         $coupon = null;
-        $output = $this->Receipt->total($input, $coupon);
+        $output = $this->Receipt->total($items, $coupon);
         // Test method
         $this->assertEquals(
             // Expected value
-            15,
+            $expected,
             // Output variable
             $output,
             //Error message
-            'When summing the total should equal 15'
+            "When summing the total should equal {$expected}"
         );
+    }
+
+    public function provideTotal() {
+        //Return array of total values
+        return [
+            'ints totaling 16' => [[1,2,5,8], 16],
+            [[-1,2,5,8], 14],
+            [[1,2,8], 11],
+        ];
     }
 
     public function testTotalAndCoupon() {
@@ -43,13 +57,26 @@ class ReceiptTest extends TestCase {
     }
 
     public function testPostTaxTotal() {
+        // items value
+        $items = [1,2,5,8];
+        // tax value
+        $tax = 0.20;
+        // coupon is equal to null
+        $coupon = null;
         $Receipt = $this->getMockBuilder('TDD\Receipt')
             ->setMethods(['tax', 'total'])
             ->getMock();
-        $Receipt->method('total')
+        // Will expect total method only once
+        $Receipt->expects($this->once())
+            ->method('total')
+            ->with($items, $coupon)
             ->will($this->returnValue(10.00));
-        $Receipt->method('tax')
+        // Will expect tax method only once
+        $Receipt->expects($this->once())
+            ->method('tax')
+            ->with(10.00, $tax)
             ->will($this->returnValue(1.00));
+        // Result is equal to ...
         $result = $Receipt->postTaxTotal([1,2,5,8], 0.20, null);
         $this->assertEquals(11.00, $result);
     }
