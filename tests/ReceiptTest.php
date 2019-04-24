@@ -71,8 +71,11 @@ class ReceiptTest extends TestCase {
         $tax = 0.20;
         // coupon is equal to null
         $coupon = null;
+        // Add $this->getMockBuilder and add name of the class that we want to build
         $Receipt = $this->getMockBuilder('TDD\Receipt')
+            // Define the methods for response, so we'll add - >setMethods().
             ->setMethods(['tax', 'total'])
+            // Return the instance of the Mock
             ->getMock();
         // Will expect total method only once
         $Receipt->expects($this->once())
